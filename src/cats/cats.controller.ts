@@ -1,5 +1,15 @@
 import { CatsService } from './cats.service';
-import { Controller, Delete, Get, Patch, Post, Put } from '@nestjs/common';
+import {
+  Param,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  Patch,
+  Post,
+  Put,
+  ParseIntPipe,
+} from '@nestjs/common';
 
 @Controller('cats')
 export class CatsController {
@@ -7,11 +17,14 @@ export class CatsController {
 
   @Get()
   getAllCats() {
+    throw new HttpException('api is borken', 401);
     return 'all cat';
   }
 
   @Get(':id')
-  getOneCate() {
+  getOneCate(@Param('id', ParseIntPipe) id: number) {
+    console.log(id);
+    console.log(typeof id);
     return 'one cat';
   }
 
