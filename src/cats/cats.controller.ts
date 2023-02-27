@@ -1,3 +1,6 @@
+import { ReadOnlyCatDto } from './dto/cat.dto';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { HttpExceptionFilter } from './../common/exceptions/http-exception.filter';
 import { CatsService } from './cats.service';
 import {
   Param,
@@ -9,42 +12,55 @@ import {
   Post,
   Put,
   ParseIntPipe,
+  Body,
 } from '@nestjs/common';
+import { SuccessInterceptor } from 'src/common/interceptions/success.interceptor';
+import { UseFilters, UseInterceptors } from '@nestjs/common/decorators';
+import { ApiOperation } from '@nestjs/swagger/dist';
+import { ApiResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 
 @Controller('cats')
+@UseInterceptors(SuccessInterceptor)
+@UseFilters(HttpExceptionFilter)
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
+  @ApiOperation({ summary: '현재 고양이 가져오기' })
   @Get()
-  getAllCats() {
-    throw new HttpException('api is borken', 401);
-    return 'all cat';
+  getCurrentCat() {
+    return 'current cat';
   }
 
-  @Get(':id')
-  getOneCate(@Param('id', ParseIntPipe) id: number) {
-    console.log(id);
-    console.log(typeof id);
-    return 'one cat';
+  @ApiResponse({
+    status: 500,
+    description: 'Server Error...',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공!',
+    type: ReadOnlyCatDto,
+  })
+  @ApiOperation({ summary: '회원가입' })
+  @Post()
+  async signUp(@Body() body: CatRequestDto) {
+    return await this.catsService.signUp(body);
   }
 
-  @Post(':id')
-  createCats() {
-    return 'create cat';
+  @ApiOperation({ summary: '로그인' })
+  @Post('login')
+  logIn() {
+    return 'login';
   }
 
-  @Delete(':id')
-  deleteCate() {
-    return 'delete cat';
+  @ApiOperation({ summary: '로그아웃' })
+  @Post('logout')
+  logOut() {
+    return 'logout';
   }
 
-  @Put(':id')
-  updateCats() {
-    return 'update cat';
-  }
-
-  @Patch(':id')
-  updatePartialCats() {
-    return 'update';
+  @ApiOperation({ summary: '고양이 이미지 업로드' })
+  @Post('upload/cats')
+  uploadCatImg() {
+    return 'uploadImg';
   }
 }
