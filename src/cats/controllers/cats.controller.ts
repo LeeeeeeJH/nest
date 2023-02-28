@@ -1,12 +1,13 @@
-import { Cat } from './cats.schema';
-import { CurrentUser } from './../common/decorators/user.decorator';
-import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
-import { LoginRequestDto } from './../auth/dto/login.request.dto';
-import { AuthService } from './../auth/auth.service';
-import { ReadOnlyCatDto } from './dto/cat.dto';
-import { CatRequestDto } from './dto/cats.request.dto';
-import { HttpExceptionFilter } from './../common/exceptions/http-exception.filter';
-import { CatsService } from './cats.service';
+import { multerOptions } from '../../common/utils/multer.options';
+import { Cat } from '../cats.schema';
+import { CurrentUser } from '../../common/decorators/user.decorator';
+import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
+import { LoginRequestDto } from '../../auth/dto/login.request.dto';
+import { AuthService } from '../../auth/auth.service';
+import { ReadOnlyCatDto } from '../dto/cat.dto';
+import { CatRequestDto } from '../dto/cats.request.dto';
+import { HttpExceptionFilter } from '../../common/exceptions/http-exception.filter';
+import { CatsService } from '../services/cats.service';
 import {
   Param,
   Controller,
@@ -18,12 +19,15 @@ import {
   Put,
   ParseIntPipe,
   Body,
+  UploadedFiles,
 } from '@nestjs/common';
 import { SuccessInterceptor } from 'src/common/interceptions/success.interceptor';
 import { Req, UseFilters, UseInterceptors } from '@nestjs/common/decorators';
 import { ApiOperation } from '@nestjs/swagger/dist';
 import { ApiResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 import { UseGuards } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express/multer';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -62,15 +66,16 @@ export class CatsController {
     return this.authService.jwtLogIn(data);
   }
 
-  @ApiOperation({ summary: '로그아웃' })
-  @Post('logout')
-  logOut() {
-    return 'logout';
-  }
-
   @ApiOperation({ summary: '고양이 이미지 업로드' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() cat: Cat,
+  ) {
+    console.log(files);
+
+    return this.catsService.uploadImg(cat, files);
   }
 }
