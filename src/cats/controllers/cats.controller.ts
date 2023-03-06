@@ -4,7 +4,7 @@ import { CurrentUser } from '../../common/decorators/user.decorator';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { LoginRequestDto } from '../../auth/dto/login.request.dto';
 import { AuthService } from '../../auth/auth.service';
-import { ReadOnlyCatDto } from '../dto/cat.dto';
+import { ReadOnlyCatDto } from '../dto/cats.dto';
 import { CatRequestDto } from '../dto/cats.request.dto';
 import { HttpExceptionFilter } from '../../common/exceptions/http-exception.filter';
 import { CatsService } from '../services/cats.service';
@@ -77,5 +77,11 @@ export class CatsController {
     console.log(files);
 
     return this.catsService.uploadImg(cat, files);
+  }
+
+  @ApiOperation({ summary: '모든 고양이 가져오기' })
+  @Get('all')
+  getAllCat() {
+    return this.catsService.getAllCat();
   }
 }
