@@ -1,3 +1,4 @@
+import { AwsModule } from 'src/common/aws/aws.module';
 import { ConfigModule } from '@nestjs/config';
 import { Comments, CommentsSchema } from './../comments/comments.schema';
 import { AuthModule } from './../auth/auth.module';
@@ -7,7 +8,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { CatsController } from './controllers/cats.controller';
 import { CatsService } from './services/cats.service';
 import { CatsRepository } from './cats.respository';
-import { AwsService } from 'src/common/aws/aws.service';
 
 @Module({
   imports: [
@@ -17,9 +17,10 @@ import { AwsService } from 'src/common/aws/aws.service';
       { name: Cat.name, schema: CatSchema },
     ]),
     forwardRef(() => AuthModule),
+    AwsModule,
   ],
   controllers: [CatsController],
-  providers: [CatsService, CatsRepository, AwsService],
+  providers: [CatsService, CatsRepository],
   exports: [CatsService, CatsRepository],
 })
 export class CatsModule {}
