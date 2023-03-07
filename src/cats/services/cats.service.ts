@@ -13,14 +13,6 @@ export class CatsService {
     const readOnlyCats = allCat.map((cat) => cat.readOnlyData);
     return readOnlyCats;
   }
-  async uploadImg(cat: Cat, files: Express.Multer.File[]) {
-    const fileName = `cats/${files[0].filename}`;
-    const newCat = await this.catsRepository.findByIdAndUpdateImg(
-      cat.id,
-      fileName,
-    );
-    return newCat;
-  }
   async signUp(body: CatRequestDto) {
     const { email, name, password } = body;
     const isCatExist = await this.catsRepository.existsByEmail(email);

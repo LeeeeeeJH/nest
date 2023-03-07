@@ -8,6 +8,7 @@ import * as mongoose from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
+import { AwsModule } from './common/aws/aws.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CommentsModule } from './comments/comments.module';
     CatsModule,
     AuthModule,
     CommentsModule,
+    AwsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
